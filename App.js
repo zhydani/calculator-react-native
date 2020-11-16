@@ -3,20 +3,38 @@ import { SafeAreaView, StyleSheet, View, FlatList, Button } from 'react-native';
 import Botao from './src/components/Button'
 import Display from './src/components/Display';
 
+const initialState = {
+  displayValue: '0',
+  clearDisplay: false,
+  operation: null,
+  value: [0, 0],
+  current: 0
+}
+
 export default class App extends Component {
-  
-  state = {
-    displayValue: '0'
-  }
+  // utilizando funcionalidade para clonar os objetos do initial state para o state
+  state = {...initialState}
 
   addDigit = n => {
-    this.setState({
-      displayValue: n
-    })
+    if (n === '.' && this.state.displayValue.includes('.')){
+      return 
+    }
+
+    const clearDisplay = this.state.displayValue === '0' || this.state.clearDisplay
+    const currentValue = clearDisplay ? '' : this.state.displayValue
+    const displayValue = currentValue + n
+    this.setState({displayValue, clearDisplay: false})
+
+    if (n !== '.'){
+      const newValue = parseFloat(displayValue)
+      const values = [...this.state.value]
+      values[this.state.current] = newValue
+      this.setState({ values })
+    }
   } 
 
   clearMemory = () => {
-    this.setState({displayValue: '0'})
+    this.setState({...initialState})
   }
 
   setOperetion = operation => {
